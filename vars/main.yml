@@ -1,0 +1,26 @@
+---
+# vars file for lestanches.pjc.kubernetes
+
+packages_prerequisites:
+  - "curl"
+  - "yum-utils"
+
+mandatory_sysctl_params:
+  net.ipv4.ip_forward: 1
+
+mandatory_kernel_modules:
+  - br_netfilter
+  - overlay
+
+mandatory_control_plane_ports:
+  - "6443/tcp"
+  - "2378-2380/tcp"
+  - "10250/tcp"
+  - "10259/tcp"
+  - "10257/tcp"
+
+mandatory_worker_node_ports:
+  - "10250/tcp"
+  - "30000-32767/tcp"
+  - "80/tcp"
+  - "443/tcp"

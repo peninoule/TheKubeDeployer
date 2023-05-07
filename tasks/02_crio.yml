@@ -1,0 +1,20 @@
+---
+- name: "KUBE | CRIO | INSTALL CRIO"
+  ansible.builtin.dnf:
+    name: cri-o
+    state: present
+  register: crio_install
+
+- name: "KUBE | CRIO | SETUP POD CIDR"
+  ansible.builtin.lineinfile:
+    path: "/etc/cni/net.d/100-crio-bridge.conf"
+    regexp: '^(.*subnet": )(.*)(\s*}])[,$]$'
+    line: '\1"{{ pod_network_cidr }}" \3'
+    backrefs: true
+
+- name: "KUBE | CRIO | START AND ENABLE SERVICE"
+  when: not ansible_check_mode
+  ansible.builtin.service:
+    name: "crio"
+    state: started
+    enabled: true

@@ -1,0 +1,37 @@
+---
+- name: KUBE | PREREQUISITES | SETUP PREREQUISITES
+  ansible.builtin.import_tasks: "00_prerequisites.yml"
+  tags:
+    - "kube"
+    - "kube::prerequisites"
+
+- name: KUBE | PREREQUISITES | SETUP FIREWALLD
+  ansible.builtin.import_tasks: "01_repositories.yml"
+  tags:
+    - "kube"
+    - "kube::repositories"
+
+- name: "KUBE | CNI | SETUP CONTAINER RUNTIME"
+  ansible.builtin.import_tasks: "02_crio.yml"
+  when: kube_container_runtime == "crio"
+  tags:
+    - "kube"
+    - "kube::crio"
+
+- name: "KUBE | KUBE-TOOLS | SETUP KUBE-TOOLS"
+  ansible.builtin.import_tasks: "03_kubelet.yml"
+  tags:
+    - "kube"
+    - "kube::kube-tools"
+
+- name: "KUBE | KUBEADM | SPIN UP CLUSTER"
+  ansible.builtin.import_tasks: "04_kubeadm.yml"
+  tags:
+    - "kube"
+    - "kube::kubeadm"
+
+- name: "KUBE | KUBEADM | ADD WORKER NODES"
+  ansible.builtin.import_tasks: "05_nodes.yml"
+  tags:
+    - "kube"
+    - "kube::workers"

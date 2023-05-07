@@ -1,0 +1,13 @@
+---
+
+- name: "KUBE | KUBE-TOOLS | INSTALL KUBERNETES TOOLS"
+  ansible.builtin.dnf:
+    name: ["kubelet", "kubeadm", "kubectl"]
+    state: present
+    disable_excludes: "kubernetes"
+
+- name: "KUBE | KUBE-TOOLS | START AND ENABLE KUBELET"
+  ansible.builtin.service:
+    name: kubelet
+    state: started
+    enabled: true

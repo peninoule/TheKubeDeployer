@@ -1,0 +1,44 @@
+---
+- name: "KUBE | KUBEADM | CHECKING FOR KUBERNETES INSTALL ON BOOTRSTRAP NODE"
+  block:
+    - name: "KUBE | KUBEADM | CHECKING KUBELET SERVICE STATUS"
+      ansible.builtin.systemd:
+        name: kubelet
+      register: kubelet_service
+    - name: "KUBE | KUBEADM | CHECKING FOR LISTENING PORTS"
+      community.general.listen_ports_facts:
+- name: "KUBE | KUBEADM | SETUP CLUSTER"
+  when: >
+    kubelet_service.status.ActiveState == "activating" and
+    ansible_facts.tcp_listen | selectattr('port', '!=', 6443) | length and
+    'bootstrap' in group_names
+  block:
+    - name: "KUBE | KUBEADM | SPIN UP CLUSTER"
+      ansible.builtin.command:
+        cmd: >
+          /usr/bin/kubeadm init
+            --pod-network-cidr "{{ pod_network_cidr }}"
+            --control-plane-endpoint "{{ control_plane_endpoint }}"
+      changed_when: true
+
+    - name: "KUBE | KUBEADM | FETCH KUBECONFIG FILE"
+      ansible.builtin.fetch:
+        src: "/etc/kubernetes/admin.conf"
+        dest: "~/.kube/config"
+        flat: true
+
+    - name: "KUBE | KUBADM | SETUP CNI"
+      delegate_to: localhost
+      block:
+        - name: "KUBE | KUBEADM | DOWNLOAD CALICO HELM REPO"
+          kubernetes.core.helm_repository:
+            name: projectcalico
+            repo_url: "{{ calico_helm_repo_url }}"
+          run_once: true
+        - name: "KUBE | KUBEADM | INSTALL CALICO HELM CHART"
+          kubernetes.core.helm:
+            name: calico
+            namespace: tigera-operator
+            chart_ref: projectcalico/tigera-operator
+            create_namespace: true
+          run_once: true

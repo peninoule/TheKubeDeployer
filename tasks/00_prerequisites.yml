@@ -1,0 +1,74 @@
+---
+- name: "KUBE | PREREQUISITES | INSTALL PREREQUISITES"
+  ansible.builtin.dnf:
+    name: "{{ packages_prerequisites }}"
+    state: present
+    update_cache: true
+
+- name: "KUBE | PREREQUISITES | ENSURE SELINUX IS ENABLED"
+  ansible.posix.selinux:
+    policy: targeted
+    state: enforcing
+
+- name: "KUBE | PREREQUISITES | DISABLING SWAP IN FSTAB"
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^[^#](.*swap.*)$'
+    replace: '# \1'
+
+- name: "KUBE | PREREQUISITES | DISABLING SWAP FOR CURRENT SESSION"
+  ansible.builtin.command:
+    cmd: "swapoff -a"
+  changed_when: false
+
+- name: "KUBE | PREREQUISITES | ENABLE MANDATORY KERNEL MODULES"
+  loop: "{{ mandatory_kernel_modules }}"
+  community.general.modprobe:
+    name: "{{ item }}"
+    persistent: "present"
+    state: "present"
+
+- name: "KUBE | PREREQUISITES | ENABLE ADDITIONAL KERNEL MODULES"
+  when: additional_kernel_modules is defined and additional_kernel_modules|length
+  community.general.modprobe:
+    name: "{{ item }}"
+    persistent: "present"
+    state: "present"
+  with_items: "{{ additional_kernel_modules | default([]) }}"
+
+- name: "KUBE | PREREQUISITES | SETUP MANDATORY SYSCTL PARAMETERS"
+  loop: "{{ query('ansible.builtin.dict', mandatory_sysctl_params) }}"
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+
+- name: "KUBE | PREREQUISITES | SETUP ADDITIONAL SYSCTL PARAMETERS"
+  loop: "{{ query('ansible.builtin.dict', additional_sysctl_params) }}"
+  when: additional_sysctl_params is defined and additional_sysctl_params|length
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+
+- name: "KUBE | PREREQUISITES | SETUP NETWORK MANAGER FOR CALICO"
+  ansible.builtin.copy:
+    src: "calico.conf"
+    dest: "/etc/NetworkManager/conf.d/"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Restart NetworkManager"
+
+- name: "KUBE | PREREQUISITES | ENSURE FIREWALLD IS DISABLED"
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: "KUBE | PREREQUISITES | DISABLE GRUB TIMEOUT"
+  ansible.builtin.lineinfile:
+    path: "/etc/default/grub"
+    regexp: "GRUB_TIMEOUT\\s*=\\s*[^0]"
+    line: "GRUB_TIMEOUT=0"
+  notify: "Reload grub"

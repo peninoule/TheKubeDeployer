@@ -1,0 +1,58 @@
+---
+- name: "KUBE | CRIO | SETUP CRIO REPOSITORY"
+  ansible.builtin.yum_repository:
+    name: crio
+    baseurl: "{{ crio_repo_url }}"
+    gpgcheck: true
+    gpgkey: "{{ crio_repo_gpg_key_url }}"
+    enabled: true
+    description: "CRI-O repository"
+  register: crio_repo
+
+- name: "KUBE | CRIO | SETUP CRIO TOOLS REPOSITORY"
+  ansible.builtin.yum_repository:
+    name: crio-tools
+    baseurl: "{{ crio_tools_repo_url }}"
+    gpgcheck: true
+    gpgkey: "{{ crio_tools_gpg_key_url }}"
+    enabled: true
+    description: "CRI-O tools repository"
+  register: crio_tools_repo
+
+- name: "KUBE | CRIO | IMPORT CRIO GPG KEY"
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ crio_repo_gpg_key_url }}"
+
+- name: "KUBE | CRIO | IMPORT CRIO TOOLS GPG KEY"
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ crio_tools_gpg_key_url }}"
+
+- name: "KUBE | KUBE-TOOLS | SETUP KUBERNETES REPO"
+  ansible.builtin.yum_repository:
+    name: kubernetes
+    baseurl: "{{ kubernetes_repo_url }}"
+    gpgcheck: true
+    gpgkey: "{{ kubernetes_repo_gpg_key_url }}"
+    enabled: true
+    description: "kubernetes repository"
+    exclude: ["kubelet", "kubeadm", kubectl"]
+    state: present
+  register: kube_repo
+
+- name: "KUBE | KUBE-TOOLS | IMPORT KUBERNETES GPG KEY"
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ kubernetes_repo_gpg_key_url }}"
+
+- name: "KUBE | KUBE-TOOLS | UPDATE THE SERVER"
+  when: kube_repo.changed or crio_tools_repo.changed or crio_repo.changed
+  block:
+    - name: "KUBE | KUBE-TOOLS | UPDATE THE PACKAGES"
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+    - name: "KUBE | KUBE-TOOLS | RESTART THE SERVER"
+      ansible.builtin.reboot:
+      throttle: 1

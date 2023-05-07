@@ -1,0 +1,26 @@
+---
+- name: "KUBE | KUBEADM | FETCHING JOIN COMMAND"
+  when: "'bootstrap' in group_names"
+  ansible.builtin.command:
+    cmd: "/usr/bin/kubeadm token create --print-join-command"
+  register: join_command
+  changed_when: false
+  run_once: true
+
+- name: "KUBE | KUBEADM | CHECKING FOR KUBERNETES INSTALL ON WORKERS"
+  block:
+    - name: "KUBE | KUBEADM | CHECKING KUBELET SERVICE STATUS"
+      ansible.builtin.systemd:
+        name: kubelet
+      register: kubelet_service
+    - name: "KUBE | KUBEADM | CHECKING FOR LISTENING PORTS"
+      community.general.listen_ports_facts:
+
+- name: "KUBE | KUBEADM | ADD WORKER NODES TO THE CLUSTER"
+  when: |
+    kubelet_service.status.ActiveState == "activating" and
+    ansible_facts.tcp_listen | selectattr('port', '!=', 10250) | length and
+    'workers' in group_names
+  ansible.builtin.command:
+    cmd: "{{ join_command.stdout }}"
+  changed_when: true

@@ -1,0 +1,13 @@
+---
+# handlers file for lestanches.pjc.kubernetes
+- name: "KUBE | HANDLER | RESTART NETWORK MANAGER"
+  ansible.builtin.service:
+    name: NetworkManager
+    state: restarted
+  listen: "Restart NetworkManager"
+
+- name: "KUBE | HANDLER | RELOAD GRUB CONFIG"
+  ansible.builtin.command:
+    cmd: "grub2-mkconfig -o /boot/grub2/grub.cfg"
+  changed_when: false
+  listen: "Reload grub"

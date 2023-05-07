@@ -1,0 +1,47 @@
+---
+# defaults file for lestanches.pjc.kubernetes
+
+#
+# Global variables
+#
+os: ""
+additional_kernel_modules: ""
+additional_sysctl_params: {}
+
+#
+# Container runtime variables
+#
+
+kube_container_runtime: ""
+
+#
+# CRIO variables
+#
+crio_major_version: ""
+crio_minor_version: ""
+crio_full_version: "{{ crio_major_version }}.{{ crio_minor_version }}"
+
+crio_base_url: "https://download.opensuse.org/repositories/devel:/\
+                kubic:/libcontainers:"
+
+crio_repo_url: "{{ crio_base_url }}/stable:/cri-o:/{{ crio_major_version }}:/\
+                {{ crio_full_version }}/{{ os }}"
+crio_repo_gpg_key_url: "{{ crio_repo_url }}/repodata/repomd.xml.key"
+
+crio_tools_repo_url: "{{ crio_base_url }}/stable/{{ os }}/"
+crio_tools_gpg_key_url: "{{ crio_tools_repo_url }}/repodata/repomd.xml.key"
+
+#
+# Kubernetes repo variables
+#
+kubernetes_repo_url: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch"
+kubernetes_repo_gpg_key_url: "https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+
+#
+# Kubernetes cluster variables
+#
+pod_network_cidr: ""
+control_plane_endpoint: ""
+
+calico_helm_repo_url: ""
+calico_operator_namesapce: ""
