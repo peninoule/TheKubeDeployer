@@ -9,7 +9,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/cni/net.d/100-crio-bridge.conf"
     regexp: '^(.*subnet": )(.*)(\s*}])[,$]$'
-    line: '\1"{{ pod_network_cidr }}" \3'
+    line: '\1"{{ pod_network_cidr }}" \3,'
     backrefs: true
 
 - name: "KUBE | CRIO | START AND ENABLE SERVICE"
