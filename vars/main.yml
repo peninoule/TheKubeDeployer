@@ -3,8 +3,6 @@
 
 packages_prerequisites:
   - "curl"
-  - "yum-utils"
-  - "udica"
 
 mandatory_sysctl_params:
   net.ipv4.ip_forward: 1
