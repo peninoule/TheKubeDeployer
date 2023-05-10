@@ -3,6 +3,7 @@
 
 packages_prerequisites:
   - "curl"
+  - "chrony"
 
 mandatory_sysctl_params:
   net.ipv4.ip_forward: 1

@@ -9,6 +9,12 @@ additional_kernel_modules: ""
 additional_sysctl_params: {}
 
 #
+# Time variables
+#
+chrony_servers: ""
+timezone: "Europe/Paris"
+
+#
 # Container runtime variables
 #
 

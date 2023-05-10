@@ -11,3 +11,10 @@
     cmd: "grub2-mkconfig -o /boot/grub2/grub.cfg"
   changed_when: false
   listen: "Reload grub"
+
+- name: "KUBE | HANDLER | RESTART CHRONY"
+  ansible.builtin.service:
+    name: chronyd
+    state: restarted
+  listen: "Restart chrony"
+  when: not ansible_check_mode
