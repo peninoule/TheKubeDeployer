@@ -73,7 +73,6 @@
         value: "{{ item.value }}"
         state: present
 
-
 - name: "KUBE | PREREQUISITES | SETUP NETWORK TIME"
   block:
     - name: "KUBE | PREREQUISITES | SETUP TIMEZONE"

@@ -5,7 +5,10 @@
     - "kube"
     - "kube::prerequisites"
 
-- name: KUBE | PREREQUISITES | SETUP FIREWALLD
+- name: KUBE | HANDLERS | FLUSH HANDLERS
+  ansible.builtin.meta: flush_handlers
+
+- name: KUBE | PREREQUISITES | SETUP REPOSITORIES
   ansible.builtin.import_tasks: "01_repositories.yml"
   tags:
     - "kube"
