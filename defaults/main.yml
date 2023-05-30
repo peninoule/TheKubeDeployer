@@ -4,27 +4,27 @@
 #
 # Global variables
 #
-os: ""
+os: "CentOS_8"
 additional_kernel_modules: ""
 additional_sysctl_params: {}
 
 #
 # Time variables
 #
-chrony_servers: ""
+chrony_servers: ["1.1.1.1"]
 timezone: "Europe/Paris"
 
 #
 # Container runtime variables
 #
 
-kube_container_runtime: ""
+kube_container_runtime: "crio"
 
 #
 # CRIO variables
 #
-crio_major_version: ""
-crio_minor_version: ""
+crio_major_version: "1.24"
+crio_minor_version: "4"
 crio_full_version: "{{ crio_major_version }}.{{ crio_minor_version }}"
 
 crio_base_url: "https://download.opensuse.org/repositories/devel:/\
@@ -46,8 +46,8 @@ kubernetes_repo_gpg_key_url: "https://packages.cloud.google.com/yum/doc/rpm-pack
 #
 # Kubernetes cluster variables
 #
-pod_network_cidr: ""
+pod_network_cidr: "10.244.0.0/16"
 control_plane_endpoint: ""
 
-calico_helm_repo_url: ""
-calico_operator_namesapce: ""
+calico_helm_repo_url: "https://docs.tigera.io/calico/charts"
+calico_operator_namesapce: "tigera-operator"
