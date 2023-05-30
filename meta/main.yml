@@ -3,7 +3,7 @@ galaxy_info:
   author: Les Tanches
   description: "Ansible role to deploy a kubernetes cluster"
   company: Les Tanches
-  issue_tracker_url: http://git.lestanches.io:3000/infra/lestanches.role.pjc.kubernetes/issues
+  issue_tracker_url: https://github.com/peninoule/TheKubeDeployer/issues
   license: MIT
   min_ansible_version: "2.1"
   platforms:
