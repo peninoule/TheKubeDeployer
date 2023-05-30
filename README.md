@@ -9,7 +9,7 @@ Requirements
 
 # NODES
 At least 2 nodes must be present on the inventory (See inventory example below) (1 Controlplane, 1 Worker Node).
-/!\: Having multiple Master nodes is not supported yet
+/!\ Having multiple Master nodes is not supported yet
 
 ## Operating systems
 The clusters nodes must run a `yum` like distribution. (RHEL, Centos, Rocky...)
@@ -23,7 +23,7 @@ The role has been tested on Rocky 9 but should work on any yum like distrib
 
 ## Ansible controller requirements:
 The following packages must be installed on the Ansible Controller
-- `helm`: The role installs [Calico](https://www.tigera.io/project-calico/) CNI via helm, ** on the Ansible Control node (The one used to launch the playbook) **
+- [helm](https://helm.sh/): The role installs [Calico](https://www.tigera.io/project-calico/) CNI via helm, **on the Ansible Control node (The one used to launch the playbook)**
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 
 Role Variables
@@ -37,14 +37,14 @@ You can leave this variables as they are
 | mandatory_sysctl_params | map | {net.ipv4.ip_forward: 1} | 
 | mandatory_kernel_modules | list | ["br_netfilter", "overlay"] |
 
-2.defaults/main.yml
+2. `defaults/main.yml`
 You can adjust to your needs
 
-| Name | Type | Required | Default | Description |
-| ---- | ---- | -------- | ------- | ----------- |
-| os | str | yes | "CentOS_8" | Name of the Os used to craft kube repo URL. See [this link for an example url](https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.21:/1.21.7/) |
+| Name | Type | Required | Default | Description                   |
+| ---- | ---- | -------- | ------- | ----------------------------- |
+| os | str | yes | "CentOS_8" | Name of the Os used to craft calico repo URL. See [this link for an example url](https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.21:/1.21.7/) |
 | additional_kernel_modules | list | No | None | List of additional sysctl params | 
-| additional_sysctl_params | map | No | Key / Value Pair of additional_sysctl_params |
+| additional_sysctl_params | map | No | None | Key / Value Pair of additional_sysctl_params |
 | chrony_servers | list | yes | ["1.1.1.1"] | List of Chrony servers to set | 
 | timezone | str | yes | "Europe/Paris" | The Timezone to set |
 | kube_container_runtime | str | yes | "crio" | CRI to use (Role will only work with Crio anyway) |
